@@ -21,3 +21,22 @@ tidy:
 .PHONY: dev
 dev:
 	fiber dev -t ./cmd/$(BINARY_NAE)
+
+.PHONY: lint
+lint:
+	revive -formatter friendly -config revive.toml ./...
+
+.PHONY: spell
+spell:
+	misspell -error ./**
+
+.PHONY: staticcheck
+staticcheck:
+	staticcheck ./...
+
+.PHONY: gosec
+gosec:
+	gosec -tests ./...
+
+.PHONY: inspect
+inspect: lint spell gosec staticcheck
