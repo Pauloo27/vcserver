@@ -20,7 +20,7 @@ tidy:
 # auto restart bot (using fiber CLI <3)
 .PHONY: dev
 dev:
-	fiber dev -t ./cmd/$(BINARY_NAE)
+	fiber dev -t ./cmd/$(BINARY_NAME)
 
 .PHONY: lint
 lint:
