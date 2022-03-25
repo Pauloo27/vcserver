@@ -13,13 +13,16 @@ func Start() {
 	loadEnv()
 	loadTarget()
 
-	if err := vcserver.Instance.Start(); err != nil {
-		logger.Fatal(err)
-	}
+	go func() {
+		if err := vcserver.Instance.Start(); err != nil {
+			logger.Fatal(err)
+		}
+	}()
 
 	stop := make(chan os.Signal, 1)
 	//lint:ignore SA1016 i dont know, it just works lol
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM, syscall.SIGKILL)
 	<-stop
+	logger.Info("Gracefully stopping the voice server...")
 	_ = vcserver.Instance.Stop()
 }

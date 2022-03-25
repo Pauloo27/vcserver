@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"os"
+	"strings"
 
 	"github.com/Pauloo27/logger"
 	"github.com/Pauloo27/vcserver/internal/models"
@@ -44,7 +45,14 @@ func (t DiscordTarget) Start() error {
 func (t DiscordTarget) Connect(id models.AbstractConnectionID) error {
 	discordID, ok := id.(DiscordConnectionID)
 	if !ok {
-		return errors.New("invalid id")
+		ids := strings.Split(id.String(), " ")
+		if len(ids) != 2 {
+			return errors.New("invalid id")
+		}
+		discordID = DiscordConnectionID{
+			GuildID:   ids[0],
+			ChannelID: ids[1],
+		}
 	}
 	vs, err := voice.NewSession(t.data.State)
 	if err != nil {
@@ -58,8 +66,7 @@ func (t DiscordTarget) Connect(id models.AbstractConnectionID) error {
 	if err != nil {
 		return err
 	}
-	vs.JoinChannel(dc.GuildID(guildSf), dc.ChannelID(channelSf), false, false)
-	return nil
+	return vs.JoinChannel(dc.GuildID(guildSf), dc.ChannelID(channelSf), false, false)
 }
 
 func (t DiscordTarget) Write([]byte) (int, error) { return 0, nil }
